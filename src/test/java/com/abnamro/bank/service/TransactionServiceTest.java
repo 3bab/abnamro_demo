@@ -6,14 +6,12 @@ import com.abnamro.bank.exception.AccountBalanceTooSmallException;
 import com.abnamro.bank.exception.AccountNotFoundException;
 import com.abnamro.bank.repository.AccountRepository;
 import com.abnamro.bank.repository.TransactionRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -21,6 +19,8 @@ import java.util.UUID;
 
 import static com.abnamro.bank.TestUtils.createdOneAccount;
 import static com.abnamro.bank.TestUtils.createdTransactionDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -52,11 +52,11 @@ public class TransactionServiceTest {
     public void testTransferAmount() throws AccountNotFoundException {
         when(accountRepository.findById(any())).thenReturn(Optional.empty());
 
-        AccountNotFoundException ex = Assertions.assertThrows(
+        AccountNotFoundException ex = assertThrowsExactly(
                 AccountNotFoundException.class,
                 () -> transactionService.transfer(createdTransactionDto()));
 
-        Assert.isTrue(ex.getMessage().equals("One of transaction accounts not found"), "Exception not correct");
+        assertEquals(ex.getMessage(), "One of transaction accounts not found", "Exception not correct");
     }
 
     @Test
@@ -69,11 +69,11 @@ public class TransactionServiceTest {
         when(accountRepository.findById(accountFrom.getUuid())).thenReturn(Optional.of(accountFrom));
         when(accountRepository.findById(accountTo.getUuid())).thenReturn(Optional.of(accountTo));
 
-        AccountBalanceTooSmallException ex = Assertions.assertThrows(
+        AccountBalanceTooSmallException ex = assertThrowsExactly(
                 AccountBalanceTooSmallException.class,
                 () -> transactionService.transfer(
                         new TransactionDto(accountFrom.getUuid(), accountTo.getUuid(), new BigDecimal(101))));
 
-        Assert.isTrue(ex.getMessage().equals("Account balance is too small"), "Exception not correct");
+        assertEquals(ex.getMessage(), "Account balance is too small", "Exception not correct");
     }
 }

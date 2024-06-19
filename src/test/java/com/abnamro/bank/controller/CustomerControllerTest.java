@@ -8,8 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static com.abnamro.bank.TestUtils.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -115,7 +113,9 @@ public class CustomerControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource({"testSearchWithFirstAndLastName", "testSearchWithFirstName", "testSearchWithLastName"})
+    @ValueSource(strings = {"firstName=test_first_name&lastName=test_last_name",
+            "firstName=test_first_name",
+            "lastName=test_last_name"})
     @DisplayName("Test /search with first and last name parameters GET")
     public void testCustomerSearch(String query) throws Exception {
         CustomerDto customer = createdOneCustomerDto();
@@ -124,17 +124,5 @@ public class CustomerControllerTest {
         mockMvc.perform(get("/customers/search?" + query))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-    }
-
-    private static Stream<Arguments> testSearchWithFirstAndLastName() {
-        return Stream.of(Arguments.of("firstName=test_first_name&lastName=test_last_name"));
-    }
-
-    private static Stream<Arguments> testSearchWithFirstName() {
-        return Stream.of(Arguments.of("firstName=test_first_name"));
-    }
-
-    private static Stream<Arguments> testSearchWithLastName() {
-        return Stream.of(Arguments.of("lastName=test_last_name"));
     }
 }

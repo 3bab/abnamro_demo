@@ -6,20 +6,20 @@ import com.abnamro.bank.exception.AccountNotFoundException;
 import com.abnamro.bank.exception.CustomerNotFoundException;
 import com.abnamro.bank.repository.AccountRepository;
 import com.abnamro.bank.repository.CustomerRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.abnamro.bank.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,10 +72,10 @@ public class AccountServiceTest {
 
         UUID accountUUID = UUID.randomUUID();
 
-        AccountNotFoundException ex = Assertions.assertThrows(
+        AccountNotFoundException ex = assertThrowsExactly(
                 AccountNotFoundException.class, () -> accountService.deleteCustomerAccount(any(), accountUUID));
 
-        Assert.isTrue(ex.getMessage().equals(String.format("Account with id %s not found", accountUUID)),
+        assertEquals(ex.getMessage(), String.format("Account with id %s not found", accountUUID),
                 "Exception not correct");
     }
 }

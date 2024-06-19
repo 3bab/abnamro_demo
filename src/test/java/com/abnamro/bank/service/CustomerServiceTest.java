@@ -3,19 +3,19 @@ package com.abnamro.bank.service;
 import com.abnamro.bank.exception.CustomerNotFoundException;
 import com.abnamro.bank.repository.AccountRepository;
 import com.abnamro.bank.repository.CustomerRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.Assert;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.abnamro.bank.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -102,10 +102,9 @@ public class CustomerServiceTest {
 
         UUID customerUUID = UUID.randomUUID();
 
-        CustomerNotFoundException ex = Assertions.assertThrows(
-                CustomerNotFoundException.class, () -> customerService.updateCustomer(customerUUID, any()));
+        CustomerNotFoundException ex = assertThrowsExactly(
+                CustomerNotFoundException.class, () -> customerService.updateCustomer(customerUUID, any()), () -> "Exception not correct");
 
-        Assert.isTrue(ex.getMessage().equals(String.format("Customer with id %s not found", customerUUID)),
-                "Exception not correct");
+        assertEquals(ex.getMessage(), String.format("Customer with id %s not found", customerUUID));
     }
 }
